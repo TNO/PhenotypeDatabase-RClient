@@ -20,7 +20,7 @@ library(RJSONIO)
 library(RCurl)
 library(digest)
 
-.defaultDeviceID = "R"
+.defaultDeviceID = unclass(Sys.time()) ##TODO: replace with unique machine id
 .defaultBase = "http://studies.dbnp.org/api/"
 .authSequence = 0
 .authKey = ""
@@ -135,10 +135,15 @@ assayDataAsMatrix = function(assayTokens) {
 			}
 		}
 	}
-	colnames(data) = data[1,]
-	data = data[2:nrow(data),]
-	rownames(data) = NULL
-	data = as.data.frame(data, stringsAsFactors = F)
-	
-	list(data = data, raw = assayData)
+  if(!is.null(dim(data))) {
+  	colnames(data) = data[1,]
+  	data = data[2:nrow(data),]
+  	rownames(data) = NULL
+  	data = as.data.frame(data, stringsAsFactors = F)
+  	
+  	list(data = data, raw = assayData)
+  } else {
+    print(data)
+    warning("No data!")
+  }
 }
