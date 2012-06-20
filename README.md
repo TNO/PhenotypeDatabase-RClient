@@ -4,6 +4,8 @@ R2GSCF
 An R client to connect to [GSCF](https://github.com/PhenotypeFoundation/GSCF).
 
 ### How to use ###
+Below is a simple manual on how to use this R client. For a more complete example, please see [this script](example.R).
+
 Load the functions in R, you can load directly from GitHub using the devtools package:
 
 <code>
