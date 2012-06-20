@@ -10,7 +10,7 @@ Load the functions in R, you can load directly from GitHub using the devtools pa
 
 ```R
 library(devtools)
-source_url("https://raw.github.com/thomaskelder/R2GSCF/master/dbnp.functions.R")
+source_url("https://raw.github.com/PhenotypeFoundation/GSCF-RClient/master/dbnp.functions.R")
 ```
 
 Specify to which instance of GSCF you wish to connect:
