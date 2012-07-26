@@ -1,2 +1,5 @@
 *~
 .*
+GSCFClient/man/*
+GSCFClient/R/*
+GSCFClient/*.tar.gz

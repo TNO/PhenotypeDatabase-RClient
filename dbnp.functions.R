@@ -11,30 +11,40 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-   
-##########################################
-## Functions to query the dbNP REST API ##
-## Thomas Kelder, 2012                  ##
-##########################################
+
 library(RJSONIO)
 library(RCurl)
 library(digest)
 
-.defaultDeviceID = unclass(Sys.time()) ##TODO: replace with unique machine id
-.defaultBase = "http://studies.dbnp.org/api/"
-.authSequence = 0
-.authKey = ""
-.authToken = ""
+.vars = new.env()
+
+.set = function(name, value) {
+  assign(name, value, env=.vars)
+}
+
+.get = function(name) {
+  v = get(name, .vars)
+  v
+}
+
+.set("deviceID", digest(paste(Sys.info(), collapse="."), algo="md5", serialize = F)) ##TODO: replace with real unique machine id
+.set("defaultBase", "http://studies.dbnp.org/api/")
+.set("authSequence", 0)
+.set("authKey", "")
+.set("authToken", "")
+.set("verbose", F)
 
 .getValidation = function() {
-	.authSequence <<- .authSequence + 1
-	print(.authSequence)
-	str = paste(.authToken, .authSequence, .authKey, sep="")
-	message("Validation string: ", str)
+	.set('authSequence', .get('authSequence') + 1)
+	str = paste(.get('authToken'), .get('authSequence'), .get('authKey'), sep="")
+  if(.get("verbose")) {
+	  message("Sequence: ", .get('authSequence'))
+	  message("Validation string: ", str)
+  }
 	digest(str, algo = "md5", serialize = F)
 }
 
-createUrl = function(base, cmd, pars = list()) {
+.createUrl = function(base, cmd, pars = list()) {
 	url = paste(base, cmd, "?", sep="")
 	for(p in names(pars)) {
 		v = pars[[p]]
@@ -43,76 +53,112 @@ createUrl = function(base, cmd, pars = list()) {
 	gsub("[\\?&]{1}$", "", url)
 }
 
-getUrlErr = function(..., verbose = T) {
-	if(verbose) print(url)
+.getUrlErr = function(...) {
+	if(.get("verbose")) print(url)
 	err= ""
-	r = getURL(..., verbose = verbose)
+	r = getURL(..., verbose = .get("verbose"))
 	if(!isValidJSON(r, asText = T)) {
-		message("ERROR:\n", r)
+		stop(r)
 	}
 	r
 }
 
-authenticate = function(user, pass, shared.key, urlBase = .defaultBase, deviceID = .defaultDeviceID) {
-	url = createUrl(urlBase, "authenticate", list(deviceID = .defaultDeviceID))
-	resp = getUrlErr(url, .opts = curlOptions(userpwd = paste(user, pass, sep=":"), verbose = T))
+setGscfBaseUrl = function(baseUrl = "http://studies.dbnp.org/api/") {
+  .set("defaultBase", baseUrl)
+}
+
+getGscfBaseUrl = function() .get("defaultBase")
+
+setGscfDeviceId = function(deviceId) {
+  .set("deviceID", deviceId)
+}
+
+getGscfDeviceId = function() .get("deviceID")
+
+setGscfVerbose = function(verbose = F) {
+  .set("verbose", verbose)
+}
+
+authenticate = function
+### Authenticate with GSCF
+(user, ##<< The username
+ pass, ##<< The password
+ shared.key ##<< The shared key (can be found at your profile page in the GSCF web interface)
+ ) {
+	url = .createUrl(.get("defaultBase"), "authenticate", list(deviceID = .get("deviceID")))
+	resp = .getUrlErr(url, .opts = curlOptions(userpwd = paste(user, pass, sep=":")))
 	auth = fromJSON(resp)
-	.authSequence <<- auth$sequence
-	.authKey <<- shared.key
-	.authToken <<- auth$token
+  .set("authSequence", auth$sequence)
+	.set("authKey", shared.key)
+	.set("authToken", auth$token)
 	T
 }
 
-fieldAsName = function(x, f = "token") {
+.fieldAsName = function(x, f = "token") {
 	names(x) = as.character(sapply(x, function(y) y[f]))
 	x
 }
 
-getStudies = function(urlBase = .defaultBase, validation = .getValidation(), deviceID = .defaultDeviceID) {
-	url = createUrl(urlBase, "getStudies", list(validation = validation, deviceID = deviceID))
-	resp = getUrlErr(url)
+getStudies = function
+### Get a list of the available studies
+() {
+	url = .createUrl(getGscfBaseUrl(), "getStudies", list(validation = .getValidation(), deviceID = .get("deviceID")))
+	resp = .getUrlErr(url)
 	r = fromJSON(resp)
-	fieldAsName(r$studies)
+	.fieldAsName(r$studies)
+  ### A named list with the available studies
 }
 
-getSubjectsForStudy = function(studyToken, validation = .getValidation(), deviceID = .defaultDeviceID, urlBase = .defaultBase) {
-	url = createUrl(urlBase, "getSubjectsForStudy", list(studyToken = studyToken, deviceID = deviceID, validation = validation))
-	resp = getUrlErr(url)
+getSubjectsForStudy = function
+### Get subjects for a given study
+(studyToken ##<< The token of the study to get the subjects for
+ ) {
+	url = .createUrl(getGscfBaseUrl(), "getSubjectsForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
+	resp = .getUrlErr(url)
 	r = fromJSON(resp)
-	fieldAsName(r$subjects, 'id')
+	.fieldAsName(r$subjects, 'id')
+  ### A named list with the subjects
 }
 
-getAssaysForStudy = function(studyToken, validation = .getValidation(), deviceID = .defaultDeviceID, urlBase = .defaultBase) {
-	url = createUrl(urlBase, "getAssaysForStudy", list(studyToken = studyToken, deviceID = deviceID, validation = validation))
-	resp = getUrlErr(url)
+getAssaysForStudy = function
+### Get the available assays for a given study
+(studyToken ##<< The token of the study to get the assays for
+ ) {
+	url = .createUrl(getGscfBaseUrl(), "getAssaysForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
+	resp = .getUrlErr(url)
 	r	= fromJSON(resp)
-	fieldAsName(r$assays)
+	.fieldAsName(r$assays)
+  ### A named list of the assays
 }
 
-getSamplesForAssay = function(assayToken, validation = .getValidation(), deviceID = .defaultDeviceID, urlBase = .defaultBase) {
-	url = createUrl(urlBase, "getSamplesForAssay", list(assayToken = assayToken, deviceID = deviceID, validation = validation))
-	resp = getUrlErr(url)
+getSamplesForAssay = function
+### Get samples for a given assay
+(assayToken ##<< The token of the assay to get the samples for
+ ) {
+	url = .createUrl(getGscfBaseUrl(), "getSamplesForAssay", list(assayToken = assayToken, deviceID = .get("deviceID"), validation = .getValidation()))
+	resp = .getUrlErr(url)
 	r = fromJSON(resp)
-	fieldAsName(r$samples)
+	.fieldAsName(r$samples)
+  ### A named list of the available samples
 }
 
-getMeasurementDataForAssay = function(assayToken, validation = .getValidation(), deviceID = .defaultDeviceID, urlBase = .defaultBase) {
-	url = createUrl(urlBase, "getMeasurementDataForAssay", list(assayToken = assayToken, deviceID = deviceID, validation = validation))
-	resp = getUrlErr(url)
+getMeasurementDataForAssay = function
+### Get data for a given assay
+(assayToken ##<< The token of the assay to get the data for
+ ) {
+	url = .createUrl(getGscfBaseUrl(), "getMeasurementDataForAssay", list(assayToken = assayToken, deviceID = .get("deviceID"), validation = .getValidation()))
+	resp = .getUrlErr(url)
 	r = fromJSON(resp)
 	r$measurements
+  ### Named list with available measurement data
 }
 
-##########################################################################
-## Convenience function to load all data and samples for given assays.  ##
-## Returns a list with the data in the following forms:                 ##
-## - data: as molten data frame                                         ##
-## - raw: a list with the raw json data for getSamplesForAssay and      ##
-##   getMeasurementDataForAssay                                         ##
-##########################################################################
-assayDataAsMatrix = function(assayTokens) {
+assayDataAsMatrix = function
+### Convenience function to load all data and samples for given assays.
+(assayTokens ##<< The tokens of the assays to get the data for
+ ) {
 	assayData = lapply(assayTokens, function(a) {
-		message("Getting data for assay: ", a)
+		if(.get("verbose")) message("Getting data for assay: ", a)
 		samples = getSamplesForAssay(a)
 		data = getMeasurementDataForAssay(a)
 		list(samples = samples, data = data)
@@ -143,7 +189,9 @@ assayDataAsMatrix = function(assayTokens) {
   	
   	list(data = data, raw = assayData)
   } else {
-    print(data)
+    if(.get("verbose")) print(data)
     warning("No data!")
   }
+	### Returns a named list with the following items $data (data as pivot table),
+  ### $raw (data in list form as returned by getSamplesForAssay and getMeasurementDataForAssay)
 }

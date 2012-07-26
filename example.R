@@ -1,11 +1,10 @@
 #################################
 ## Example on GSCF R functions ##
 #################################
-library(devtools)
-source_url("https://raw.github.com/thomaskelder/R2GSCF/master/dbnp.functions.R")
+library(GSCFClient)
 
 ## Specify the GSCF instance
-.defaultBase = "http://old.studies.dbnp.org/api/"
+setGscfBaseUrl("http://old.studies.dbnp.org/api/")
 
 ## Login to the GSCF instance
 #user = "yourUsername"
@@ -37,9 +36,8 @@ sampleMice = sapply(samples, function(x) gsub("_.+$", "", x$name))
 
 ## Get the body weight from subjects
 bw = sapply(samples, function(s) {
-  token = s$token
   mouse = gsub("_.+$", "", s$name)
-  subjects[[mouse]]$`bodyWeight(g)`
+  subjects[sapply(subjects, function(x) x$name) == mouse][[1]]$`bodyWeight(g)`
 })
 
 ## Reformat data to plot
