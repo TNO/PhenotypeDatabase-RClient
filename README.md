@@ -35,7 +35,7 @@ Specify to which instance of GSCF you wish to connect:
 setGscfBaseUrl("http://old.studies.dbnp.org/api/")
 ```
 
-Specify your authentication information and login to GSCF. You can lookup your shared key on the GSCF website, under user -> profile.
+Specify your authentication information and login to GSCF. You can lookup your shared key on the GSCF website, under user -> profile. Do not forget to ask an admin to give you ROLE_CLIENT privileges.
 
 ```R
 user = "yourUsername"
