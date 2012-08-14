@@ -5,7 +5,7 @@ An R client to connect to [GSCF](https://github.com/PhenotypeFoundation/GSCF).
 
 ### How to install ##
 Download the package file from github:
-https://github.com/thomaskelder/R2GSCF/blob/master/GSCFClient_1.0.tar.gz
+https://github.com/thomaskelder/R2GSCF/blob/master/GSCFClient_latest.tar.gz
 
 And install it in R:
 
