@@ -1,3 +1,5 @@
+library(inlinedocs)
+
 #package.skeleton("GSCFClient", code_files = "dbnp.functions.R")
 dir.create("GSCFClient/R")
 dir.create("GSCFClient/man")
