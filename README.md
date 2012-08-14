@@ -22,13 +22,20 @@ Load the R client package:
 library(GSCFClient)
 ```
 
+Or. if you prefer to load the library without installing, you can also run it directly from source:
+
+```R
+library(devtools)
+source_url("https://raw.github.com/PhenotypeFoundation/GSCF-RClient/master/dbnp.functions.R")
+```
+
 Specify to which instance of GSCF you wish to connect:
 
 ```R
 setGscfBaseUrl("http://old.studies.dbnp.org/api/")
 ```
 
-Specify your authentication information and login to GSCF. You can lookup your shared key on the GSCF website, under user -> profile.
+Specify your authentication information and login to GSCF. You can lookup your shared key on the GSCF website, under user -> profile. Do not forget to ask an admin to give you ROLE_CLIENT privileges.
 
 ```R
 user = "yourUsername"

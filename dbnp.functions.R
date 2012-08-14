@@ -116,8 +116,52 @@ getSubjectsForStudy = function
 	url = .createUrl(getGscfBaseUrl(), "getSubjectsForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
 	r = fromJSON(resp)
-	.fieldAsName(r$subjects, 'id')
+	.fieldAsName(r$subjects)
   ### A named list with the subjects
+}
+
+getEventGroupsForStudy = function
+### Get event groups for a given study
+(studyToken ##<< The token of the study to get the event groups for
+ ) {
+	url = .createUrl(getGscfBaseUrl(), "getEventGroupsForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
+	resp = .getUrlErr(url)
+	r = fromJSON(resp)
+	.fieldAsName(r$eventGroups)
+  ### A named list with the event groups
+}
+
+getEventsForStudy = function
+### Get events for a given study
+(studyToken ##<< The token of the study to get the events for
+ ) {
+	url = .createUrl(getGscfBaseUrl(), "getEventsForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
+	resp = .getUrlErr(url)
+	r = fromJSON(resp)
+	.fieldAsName(r$events)
+  ### A named list with the events
+}
+
+getSamplingEventsForStudy = function
+### Get sampling events for a given study
+(studyToken ##<< The token of the study to get the sampling events for
+ ) {
+	url = .createUrl(getGscfBaseUrl(), "getSamplingEventsForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
+	resp = .getUrlErr(url)
+	r = fromJSON(resp)
+	.fieldAsName(r$samplingEvents)
+  ### A named list with the sampling events
+}
+
+getSamplesForStudy = function
+### Get samples for a given study
+(studyToken ##<< The token of the study to get the samples for
+ ) {
+	url = .createUrl(getGscfBaseUrl(), "getSamplesForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
+	resp = .getUrlErr(url)
+	r = fromJSON(resp)
+	.fieldAsName(r$samples)
+  ### A named list with the samples
 }
 
 getAssaysForStudy = function
