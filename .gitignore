@@ -3,3 +3,4 @@
 GSCFClient/man/*
 GSCFClient/R/*
 GSCFClient/*.tar.gz
+.Rproj.user
