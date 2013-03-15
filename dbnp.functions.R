@@ -34,9 +34,7 @@ library(digest)
 .set("authToken", "")
 .set("verbose", F)
 
-.getValidation = function(auth = NULL) {
-  if(!is.null(auth)) for(n in names(auth)) .set(n, auth[[n]])
-  
+.getValidation = function() {
 	.set('authSequence', .get('authSequence') + 1)
 	str = paste(.get('authToken'), .get('authSequence'), .get('authKey'), sep="")
   if(.get("verbose")) {
@@ -85,20 +83,15 @@ authenticate = function
 ### Authenticate with GSCF
 (user, ##<< The username
  pass, ##<< The password
- shared.key, ##<< The shared key (can be found at your profile page in the GSCF web interface)
- base.url = NULL ##<< The base url of the GSCF instance to authenticate to
+ shared.key ##<< The shared key (can be found at your profile page in the GSCF web interface)
  ) {
-  if(is.null(base.url)) base.url = getGscfBaseUrl
-  setGscfBaseUrl(base.url)
-  
 	url = .createUrl(.get("defaultBase"), "authenticate", list(deviceID = .get("deviceID")))
 	resp = .getUrlErr(url, .opts = curlOptions(userpwd = paste(user, pass, sep=":")))
 	auth = fromJSON(resp)
   .set("authSequence", auth$sequence)
 	.set("authKey", shared.key)
 	.set("authToken", auth$token)
-	
-  .vars ## Return latest authentication info
+	T
 }
 
 .fieldAsName = function(x, f = "token") {
@@ -108,9 +101,8 @@ authenticate = function
 
 getStudies = function
 ### Get a list of the available studies
-(auth = NULL ##<< Optional authentication information (returned by authenticate). If not provided, internally kept authentication info will be used (as set by last call to authenticate)
-) {
-	url = .createUrl(getGscfBaseUrl(), "getStudies", list(validation = .getValidation(auth), deviceID = .get("deviceID")))
+() {
+	url = .createUrl(getGscfBaseUrl(), "getStudies", list(validation = .getValidation(), deviceID = .get("deviceID")))
 	resp = .getUrlErr(url)
 	r = fromJSON(resp)
 	.fieldAsName(r$studies)
@@ -119,8 +111,7 @@ getStudies = function
 
 getSubjectsForStudy = function
 ### Get subjects for a given study
-(studyToken, ##<< The token of the study to get the subjects for
- auth = NULL ##<< Optional authentication information (returned by authenticate). If not provided, internally kept authentication info will be used (as set by last call to authenticate)
+(studyToken ##<< The token of the study to get the subjects for
  ) {
 	url = .createUrl(getGscfBaseUrl(), "getSubjectsForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
@@ -131,8 +122,7 @@ getSubjectsForStudy = function
 
 getEventGroupsForStudy = function
 ### Get event groups for a given study
-(studyToken, ##<< The token of the study to get the event groups for
- auth = NULL ##<< Optional authentication information (returned by authenticate). If not provided, internally kept authentication info will be used (as set by last call to authenticate)
+(studyToken ##<< The token of the study to get the event groups for
  ) {
 	url = .createUrl(getGscfBaseUrl(), "getEventGroupsForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
@@ -143,8 +133,7 @@ getEventGroupsForStudy = function
 
 getEventsForStudy = function
 ### Get events for a given study
-(studyToken, ##<< The token of the study to get the events for
- auth = NULL ##<< Optional authentication information (returned by authenticate). If not provided, internally kept authentication info will be used (as set by last call to authenticate)
+(studyToken ##<< The token of the study to get the events for
  ) {
 	url = .createUrl(getGscfBaseUrl(), "getEventsForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
@@ -155,8 +144,7 @@ getEventsForStudy = function
 
 getSamplingEventsForStudy = function
 ### Get sampling events for a given study
-(studyToken, ##<< The token of the study to get the sampling events for
- auth = NULL ##<< Optional authentication information (returned by authenticate). If not provided, internally kept authentication info will be used (as set by last call to authenticate)
+(studyToken ##<< The token of the study to get the sampling events for
  ) {
 	url = .createUrl(getGscfBaseUrl(), "getSamplingEventsForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
@@ -167,8 +155,7 @@ getSamplingEventsForStudy = function
 
 getSamplesForStudy = function
 ### Get samples for a given study
-(studyToken, ##<< The token of the study to get the samples for
- auth = NULL ##<< Optional authentication information (returned by authenticate). If not provided, internally kept authentication info will be used (as set by last call to authenticate)
+(studyToken ##<< The token of the study to get the samples for
  ) {
 	url = .createUrl(getGscfBaseUrl(), "getSamplesForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
@@ -179,8 +166,7 @@ getSamplesForStudy = function
 
 getAssaysForStudy = function
 ### Get the available assays for a given study
-(studyToken, ##<< The token of the study to get the assays for
- auth = NULL ##<< Optional authentication information (returned by authenticate). If not provided, internally kept authentication info will be used (as set by last call to authenticate)
+(studyToken ##<< The token of the study to get the assays for
  ) {
 	url = .createUrl(getGscfBaseUrl(), "getAssaysForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
@@ -191,8 +177,7 @@ getAssaysForStudy = function
 
 getSamplesForAssay = function
 ### Get samples for a given assay
-(assayToken, ##<< The token of the assay to get the samples for
- auth = NULL ##<< Optional authentication information (returned by authenticate). If not provided, internally kept authentication info will be used (as set by last call to authenticate)
+(assayToken ##<< The token of the assay to get the samples for
  ) {
 	url = .createUrl(getGscfBaseUrl(), "getSamplesForAssay", list(assayToken = assayToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
@@ -203,8 +188,7 @@ getSamplesForAssay = function
 
 getMeasurementDataForAssay = function
 ### Get data for a given assay
-(assayToken, ##<< The token of the assay to get the data for
- auth = NULL ##<< Optional authentication information (returned by authenticate). If not provided, internally kept authentication info will be used (as set by last call to authenticate)
+(assayToken ##<< The token of the assay to get the data for
  ) {
 	url = .createUrl(getGscfBaseUrl(), "getMeasurementDataForAssay", list(assayToken = assayToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
@@ -215,8 +199,7 @@ getMeasurementDataForAssay = function
 
 assayDataAsMatrix = function
 ### Convenience function to load all data and samples for given assays.
-(assayTokens, ##<< The tokens of the assays to get the data for
- auth = NULL ##<< Optional authentication information (returned by authenticate). If not provided, internally kept authentication info will be used (as set by last call to authenticate)
+(assayTokens ##<< The tokens of the assays to get the data for
  ) {
 	assayData = lapply(assayTokens, function(a) {
 		if(.get("verbose")) message("Getting data for assay: ", a)
