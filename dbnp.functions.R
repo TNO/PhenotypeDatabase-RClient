@@ -209,12 +209,12 @@ assayDataAsMatrix = function
 	})
 	names(assayData) = assayTokens
 	
-	data = c("sampleToken", "sampleName", "measurement", "value")
+	data = c("sampleToken", "sampleName", "measurementName", "value")
 
 	for(a in names(assayData)) {
 		ad = assayData[[a]]$data
 		samples = assayData[[a]]$samples
-		sampleNames = lapply(samples, function(x) x['name'])
+		sampleNames = lapply(samples, function(x) x$name)
 		
 		for(s in names(ad)) {
 			row = ad[[s]]
