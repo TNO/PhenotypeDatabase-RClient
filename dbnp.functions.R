@@ -209,18 +209,18 @@ assayDataAsMatrix = function
 	})
 	names(assayData) = assayTokens
 	
-	data = c("sampleToken", "sampleName", "measurementName", "value")
+	data = c("sampleToken", "sampleName", "measurementName", "value","parentEventToken")
 
 	for(a in names(assayData)) {
 		ad = assayData[[a]]$data
 		samples = assayData[[a]]$samples
 		sampleNames = lapply(samples, function(x) x$name)
-		
+		parentEventTokens = lapply(samples, function(x) x$parentEventToken)
 		for(s in names(ad)) {
 			row = ad[[s]]
 			row[sapply(row, is.null)] = NA
 			for(m in names(row)) {
-				rd = as.character(c(s, sampleNames[s], m, row[m]))
+				rd = as.character(c(s, sampleNames[s], m, row[m],parentEventTokens[s]))
 				data = rbind(data, rd)
 			}
 		}
@@ -230,8 +230,9 @@ assayDataAsMatrix = function
   	data = data[2:nrow(data),]
   	rownames(data) = NULL
   	data = as.data.frame(data, stringsAsFactors = F)
+  	data[,4] = as.numeric(data[,4])
   	
-  	list(data = data, raw = assayData)
+    list(data = data, raw = assayData)
   } else {
     if(.get("verbose")) print(data)
     warning("No data!")
