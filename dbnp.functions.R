@@ -87,7 +87,7 @@ authenticate = function
  ) {
 	url = .createUrl(.get("defaultBase"), "authenticate", list(deviceID = .get("deviceID")))
 	resp = .getUrlErr(url, .opts = curlOptions(userpwd = paste(user, pass, sep=":")))
-	auth = fromJSON(resp)
+	auth = fromJSON(resp, nullValue = NA)
   .set("authSequence", auth$sequence)
 	.set("authKey", shared.key)
 	.set("authToken", auth$token)
@@ -104,7 +104,7 @@ getStudies = function
 () {
 	url = .createUrl(getGscfBaseUrl(), "getStudies", list(validation = .getValidation(), deviceID = .get("deviceID")))
 	resp = .getUrlErr(url)
-	r = fromJSON(resp)
+	r = fromJSON(resp, nullValue = NA)
 	.fieldAsName(r$studies)
   ### A named list with the available studies
 }
@@ -115,7 +115,7 @@ getSubjectsForStudy = function
  ) {
 	url = .createUrl(getGscfBaseUrl(), "getSubjectsForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
-	r = fromJSON(resp)
+	r = fromJSON(resp, nullValue = NA)
 	.fieldAsName(r$subjects)
   ### A named list with the subjects
 }
@@ -126,7 +126,7 @@ getEventGroupsForStudy = function
  ) {
 	url = .createUrl(getGscfBaseUrl(), "getEventGroupsForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
-	r = fromJSON(resp)
+	r = fromJSON(resp, nullValue = NA)
 	.fieldAsName(r$eventGroups)
   ### A named list with the event groups
 }
@@ -137,7 +137,7 @@ getEventsForStudy = function
  ) {
 	url = .createUrl(getGscfBaseUrl(), "getEventsForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
-	r = fromJSON(resp)
+	r = fromJSON(resp, nullValue = NA)
 	.fieldAsName(r$events)
   ### A named list with the events
 }
@@ -148,7 +148,7 @@ getSamplingEventsForStudy = function
  ) {
 	url = .createUrl(getGscfBaseUrl(), "getSamplingEventsForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
-	r = fromJSON(resp)
+	r = fromJSON(resp, nullValue = NA)
 	.fieldAsName(r$samplingEvents)
   ### A named list with the sampling events
 }
@@ -159,7 +159,7 @@ getSamplesForStudy = function
  ) {
 	url = .createUrl(getGscfBaseUrl(), "getSamplesForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
-	r = fromJSON(resp)
+	r = fromJSON(resp, nullValue = NA)
 	.fieldAsName(r$samples)
   ### A named list with the samples
 }
@@ -170,7 +170,7 @@ getAssaysForStudy = function
  ) {
 	url = .createUrl(getGscfBaseUrl(), "getAssaysForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
-	r	= fromJSON(resp)
+	r	= fromJSON(resp, nullValue = NA)
 	.fieldAsName(r$assays)
   ### A named list of the assays
 }
@@ -181,7 +181,7 @@ getSamplesForAssay = function
  ) {
 	url = .createUrl(getGscfBaseUrl(), "getSamplesForAssay", list(assayToken = assayToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
-	r = fromJSON(resp)
+	r = fromJSON(resp, nullValue = NA)
 	.fieldAsName(r$samples)
   ### A named list of the available samples
 }
@@ -192,7 +192,7 @@ getMeasurementDataForAssay = function
  ) {
 	url = .createUrl(getGscfBaseUrl(), "getMeasurementDataForAssay", list(assayToken = assayToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
-	r = fromJSON(resp)
+	r = fromJSON(resp, nullValue = NA)
 	r$measurements
   ### Named list with available measurement data
 }
@@ -209,18 +209,20 @@ assayDataAsMatrix = function
 	})
 	names(assayData) = assayTokens
 	
-	data = c("sampleToken", "sampleName", "measurementName", "value","parentEventToken")
+	data = c("sampleToken", "sampleName", "measurementName", "value","subject","samplingEvent","eventGroup")
 
 	for(a in names(assayData)) {
 		ad = assayData[[a]]$data
 		samples = assayData[[a]]$samples
 		sampleNames = lapply(samples, function(x) x$name)
-		parentEventTokens = lapply(samples, function(x) x$parentEventToken)
+		subjects = lapply(samples, function(x) x$subject)
+		samplingEvents = lapply(samples, function(x) x$samplingEvent)
+		eventGroups = lapply(samples, function(x) x$eventGroup)
 		for(s in names(ad)) {
 			row = ad[[s]]
 			row[sapply(row, is.null)] = NA
 			for(m in names(row)) {
-				rd = as.character(c(s, sampleNames[s], m, row[m],parentEventTokens[s]))
+				rd = as.character(c(s, sampleNames[s], m, row[m],subjects[s],samplingEvents[s],eventGroups[s]))
 				data = rbind(data, rd)
 			}
 		}
