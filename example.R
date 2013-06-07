@@ -4,12 +4,12 @@
 library(GSCFClient)
 
 ## Specify the GSCF instance
-setGscfBaseUrl("http://old.studies.dbnp.org/api/")
+setGscfBaseUrl("http://studies.dbnp.org/api/")
 
 ## Login to the GSCF instance
-#user = "yourUsername"
-#pass = "yourPass"
-#skey = "yourSharedKey"
+user = "yourUsername"
+pass = "yourPass"
+skey = "yourSharedKey"
 authenticate(user, pass, skey)
 
 ## Get available studies

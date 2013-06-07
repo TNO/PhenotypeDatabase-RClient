@@ -4,13 +4,10 @@ R2GSCF
 An R client to connect to [GSCF](https://github.com/PhenotypeFoundation/GSCF).
 
 ### How to install ##
-Download the package file from github:
-https://github.com/thomaskelder/R2GSCF/blob/master/GSCFClient_latest.tar.gz
-
-And install it in R:
-
+Use the devtools package to directly install the package from github.
 ```R
-install.packages('/path/to/GSCFClient_1.0.tar.gz', repo=NULL)
+library(devtools)
+install_github("GSCF-RClient","TNO")
 ```
 
 ### How to use ###
@@ -26,13 +23,13 @@ Or. if you prefer to load the library without installing, you can also run it di
 
 ```R
 library(devtools)
-source_url("https://raw.github.com/PhenotypeFoundation/GSCF-RClient/master/dbnp.functions.R")
+source_url("https://raw.github.com/PhenotypeFoundation/GSCF-RClient/master/R/dbnp.functions.R")
 ```
 
 Specify to which instance of GSCF you wish to connect:
 
 ```R
-setGscfBaseUrl("http://old.studies.dbnp.org/api/")
+setGscfBaseUrl("http://studies.dbnp.org/api/")
 ```
 
 Specify your authentication information and login to GSCF. You can lookup your shared key on the GSCF website, under user -> profile. Do not forget to ask an admin to give you ROLE_CLIENT privileges.

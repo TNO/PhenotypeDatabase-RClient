@@ -1,7 +1,7 @@
 Package: GSCFClient
 Type: Package
 Title: Client for GSCF (http://phenotypefoundation.org/)
-Version: 1.1
+Version: 1.2
 Date: 2012-07-18
 Author: Thomas Kelder <thomas.kelder@tno.nl>
 Maintainer: Thomas Kelder <thomas.kelder@tno.nl>
