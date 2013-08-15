@@ -27,7 +27,11 @@ library(digest)
   v
 }
 
-.set("deviceID", digest(paste(Sys.info(), collapse="."), algo="md5", serialize = F)) ##TODO: replace with real unique machine id
+.genDeviceID = function(user) {
+  digest(paste0(.get("deviceIDBase"), user), algo="md5", serialize = F)
+}
+
+.set("deviceIDBase", paste(Sys.info(), collapse=".")) ##TODO: replace with real unique machine id
 .set("defaultBase", "http://studies.dbnp.org/api/")
 .set("authSequence", 0)
 .set("authKey", "")
@@ -85,12 +89,14 @@ authenticate = function
  pass, ##<< The password
  shared.key ##<< The shared key (can be found at your profile page in the GSCF web interface)
  ) {
-	url = .createUrl(.get("defaultBase"), "authenticate", list(deviceID = .get("deviceID")))
+ 	devId = .genDeviceID(user)
+	url = .createUrl(.get("defaultBase"), "authenticate", list(deviceID = devId))
 	resp = .getUrlErr(url, .opts = curlOptions(userpwd = paste(user, pass, sep=":")))
 	auth = fromJSON(resp, nullValue = NA)
   .set("authSequence", auth$sequence)
 	.set("authKey", shared.key)
 	.set("authToken", auth$token)
+	.set("deviceID", devId)
 	T
 }
 
