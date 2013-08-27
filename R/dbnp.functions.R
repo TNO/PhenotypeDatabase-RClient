@@ -219,6 +219,7 @@ assayDataAsMatrix = function
 
 	for(a in names(assayData)) {
 		ad = assayData[[a]]$data
+		if(length(ad) == 0) next()
 		samples = assayData[[a]]$samples
 		sampleNames = lapply(samples, function(x) x$name)
 		subjects = lapply(samples, function(x) x$subject)
