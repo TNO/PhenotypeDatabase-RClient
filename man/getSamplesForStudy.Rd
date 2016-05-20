@@ -9,7 +9,7 @@
 
 \value{A named list with the samples}
 
-\author{Thomas Kelder <thomas.kelder@tno.nl>}
+\author{Thomas Kelder, Ferry Jagers}
 
 
 

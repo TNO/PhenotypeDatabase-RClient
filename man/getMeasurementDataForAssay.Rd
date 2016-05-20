@@ -9,7 +9,7 @@
 
 \value{Named list with available measurement data}
 
-\author{Thomas Kelder <thomas.kelder@tno.nl>}
+\author{Thomas Kelder, Ferry Jagers}
 
 
 

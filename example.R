@@ -1,12 +1,14 @@
-#################################
-## Example on GSCF R functions ##
-#################################
-library(GSCFClient)
+###############################################
+## Example on Phenotype Database R functions ##
+###############################################
+library(devtools)
+install_github("TNO/PhenotypeDatabase-RClient")
 
-## Specify the GSCF instance
-setGscfBaseUrl("http://studies.dbnp.org/api/")
+## Specify the Phenotype Database instance
+setPhenotypeDatabaseBaseUrl("https://dashin.eu/interventionstudies/api/")
 
-## Login to the GSCF instance
+## Login to the Phenotype Database instance
+## You can find your API key (skey) in your Phenotype Database profile
 user = "yourUsername"
 pass = "yourPass"
 skey = "yourSharedKey"
@@ -15,38 +17,45 @@ authenticate(user, pass, skey)
 ## Get available studies
 studies = getStudies()
 
-## Look for the NuGO PPS2 study
-study = studies[[grep("PPS2", sapply(studies, function(x) x$title))]]
+## Look for the Diclofenac study
+study = studies[[grep("Diclofenac", sapply(studies, function(x) x$title))]]
 studyToken = study['token']
-
-## Get the subject information for the study
-subjects = getSubjectsForStudy(studyToken)
 
 ## Get some assay data for the study
 assays = getAssaysForStudy(studyToken)
 assayNames = sapply(assays, function(x) x$name)
-samAssay = names(assayNames[grep("chemistry", assayNames)])
-samData = assayDataAsMatrix(samAssay)
+assayToken = names(assayNames[grep("GCMS", assayNames)])
 
-## Get the sample information for the assay
-samples = getSamplesForAssay(samAssay)
+assaySubjects = getSubjectsForAssay(assayToken)
+assayFeatures = getFeaturesForAssay(assayToken)
+assayData = getMeasurementDataForAssay(assayToken)
 
-## Extract the mouse number from the sample name
-sampleMice = sapply(samples, function(x) gsub("_.+$", "", x$name))
+print(paste("Fetched a total of", assayData[['count']], "measurements for the assay."))
 
-## Get the body weight from subjects
-bw = sapply(samples, function(s) {
-  mouse = gsub("_.+$", "", s$name)
-  subjects[sapply(subjects, function(x) x$name) == mouse][[1]]$`bodyWeight(g)`
-})
+## Get all available timepoints for Inositol
+inositolTimepoints = names(assayData[['measurements']][['Inositol']])
 
-## Reformat data to plot
-plotData = samData$data[, c('sampleToken', 'measurement', 'value')]
-plotData = cbind(plotData, bodyWeight = as.numeric(bw[plotData$sampleToken]))
-plotData$value = as.numeric(plotData$value)
+## View all available timepoints for Inositol
+print(inositolTimepoints)
 
-## Plot adiponectin and cholesterol data for all mice
+## Get measurments for timepoint 0
+inositolBaseline = assayData[['measurements']][['Inositol']][['0s']]
+## Get measurments for timepoint 1 week 2 days 3 hours
+inositolLast = assayData[['measurements']][['Inositol']][['1w2d3h']]
+
+## Create data.frame
+assayDataFrame <- data.frame(
+  subject = c(names(inositolBaseline),names(inositolLast)),
+  timepoint = rep(c("Baseline", "Last"), each = 19),
+  value = c(inositolBaseline, inositolLast)
+)
+
+## View data frame
+print(assayDataFrame)
+
+## Plot data frame (using ggplot2)
 library(ggplot2)
-p = ggplot(plotData, aes(bodyWeight, value))
-p = p + geom_point(aes(colour = measurement))
+p = ggplot(assayDataFrame, aes(x=subject, y=value, fill=timepoint)) +
+  geom_bar(stat="identity", position=position_dodge())
 p
+
