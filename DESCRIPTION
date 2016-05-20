@@ -1,4 +1,4 @@
-Package: PhenotypeDatabase-RClient
+Package: PhenotypeDatabaseRClient
 Type: Package
 Title: R Client for Phenotype Database (http://phenotypefoundation.org/)
 Version: 2.0.0
