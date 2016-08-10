@@ -8,12 +8,12 @@
 \tabular{ll}{Package: \tab PhenotypeDatabase-RClient\cr
 Type: \tab Package\cr
 Title: \tab R Client for Phenotype Database (http://phenotypefoundation.org/)\cr
-Version: \tab 2.0.0\cr
-Date: \tab 2016-05-20\cr
-Author: \tab Thomas Kelder, Ferry Jagers\cr
+Version: \tab 2.0.1\cr
+Date: \tab 2016-08-02\cr
+Author: \tab Thomas Kelder, Ferry Jagers, Tim van den Broek\cr
 Maintainer: \tab Ferry Jagers <ferry.jagers@tno.nl>\cr
 License: \tab Apache License, Version 2.0\cr
-Depends: \tab RJSONIO, RCurl, digest\cr}
+Depends: \tab RJSONIO, rjson, RCurl, digest\cr}
 }
 \author{Thomas Kelder, Ferry Jagers}
 

@@ -1,4 +1,4 @@
-#   Copyright 2016 Thomas Kelder & Ferry Jagers
+#   Copyright 2016 Thomas Kelder, Ferry Jagers & Tim van den Broek
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 #   limitations under the License.
 
 library(RJSONIO)
+library(rjson)
 library(RCurl)
 library(digest)
 
@@ -92,7 +93,7 @@ authenticate = function
  	devId = .genDeviceID(user)
 	url = .createUrl(getPhenotypeDatabaseBaseUrl(), "authenticate", list(deviceID = devId))
 	resp = .getUrlErr(url, .opts = curlOptions(userpwd = paste(user, pass, sep=":")))
-	auth = fromJSON(resp, nullValue = NA)
+	auth = fromJSON(resp)
   .set("authSequence", auth$sequence)
 	.set("authKey", shared.key)
 	.set("authToken", auth$token)
@@ -110,7 +111,7 @@ getStudies = function
 () {
 	url = .createUrl(getPhenotypeDatabaseBaseUrl(), "getStudies", list(validation = .getValidation(), deviceID = .get("deviceID")))
 	resp = .getUrlErr(url)
-	r = fromJSON(resp, nullValue = NA)
+	r = fromJSON(resp)
 	.fieldAsName(r$studies)
   ### A named list with the available studies
 }
@@ -121,7 +122,7 @@ getSubjectsForStudy = function
  ) {
 	url = .createUrl(getPhenotypeDatabaseBaseUrl(), "getSubjectsForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
-	r = fromJSON(resp, nullValue = NA)
+	r = fromJSON(resp)
 	.fieldAsName(r$subjects)
   ### A named list with the subjects
 }
@@ -132,7 +133,7 @@ getSubjectGroupsForStudy = function
 ) {
   url = .createUrl(getPhenotypeDatabaseBaseUrl(), "getSubjectGroupsForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
   resp = .getUrlErr(url)
-  r = fromJSON(resp, nullValue = NA)
+  r = fromJSON(resp)
   .fieldAsName(r$subjectGroups)
   ### A named list with the subjects
 }
@@ -143,7 +144,7 @@ getSampleAndTreatmentGroupsForStudy = function
  ) {
 	url = .createUrl(getPhenotypeDatabaseBaseUrl(), "getSampleAndTreatmentGroupsForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
-	r = fromJSON(resp, nullValue = NA)
+	r = fromJSON(resp)
 	.fieldAsName(r$sampleAndTreatmentGroups)
   ### A named list with the sample & treatment groups
 }
@@ -154,7 +155,7 @@ getTreatmentTypesForStudy = function
  ) {
 	url = .createUrl(getPhenotypeDatabaseBaseUrl(), "getTreatmentTypesForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
-	r = fromJSON(resp, nullValue = NA)
+	r = fromJSON(resp)
 	.fieldAsName(r$treatmentTypes)
   ### A named list with the treatment types
 }
@@ -165,7 +166,7 @@ getSampleTypesForStudy = function
  ) {
 	url = .createUrl(getPhenotypeDatabaseBaseUrl(), "getSampleTypesForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
-	r = fromJSON(resp, nullValue = NA)
+	r = fromJSON(resp)
 	.fieldAsName(r$sampleTypes)
   ### A named list with the sample types
 }
@@ -176,7 +177,7 @@ getAssaysForStudy = function
  ) {
 	url = .createUrl(getPhenotypeDatabaseBaseUrl(), "getAssaysForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
-	r	= fromJSON(resp, nullValue = NA)
+	r	= fromJSON(resp)
 	.fieldAsName(r$assays)
   ### A named list of the assays
 }
@@ -187,7 +188,7 @@ getSamplesForStudy = function
 ) {
   url = .createUrl(getPhenotypeDatabaseBaseUrl(), "getSamplesForStudy", list(studyToken = studyToken, deviceID = .get("deviceID"), validation = .getValidation()))
   resp = .getUrlErr(url)
-  r = fromJSON(resp, nullValue = NA)
+  r = fromJSON(resp)
   .fieldAsName(r$samples)
   ### A named list with the samples
 }
@@ -198,7 +199,7 @@ getSubjectsForAssay = function
 ) {
   url = .createUrl(getPhenotypeDatabaseBaseUrl(), "getSubjectsForAssay", list(assayToken = assayToken, deviceID = .get("deviceID"), validation = .getValidation()))
   resp = .getUrlErr(url)
-  r = fromJSON(resp, nullValue = NA)
+  r = fromJSON(resp)
   .fieldAsName(r$subjects)
   ### A named list of the available subjects
 }
@@ -209,7 +210,7 @@ getSamplesForAssay = function
  ) {
 	url = .createUrl(getPhenotypeDatabaseBaseUrl(), "getSamplesForAssay", list(assayToken = assayToken, deviceID = .get("deviceID"), validation = .getValidation()))
 	resp = .getUrlErr(url)
-	r = fromJSON(resp, nullValue = NA)
+	r = fromJSON(resp)
 	.fieldAsName(r$samples)
   ### A named list of the available samples
 }
@@ -220,7 +221,7 @@ getFeaturesForAssay = function
 ) {
   url = .createUrl(getPhenotypeDatabaseBaseUrl(), "getFeaturesForAssay", list(assayToken = assayToken, deviceID = .get("deviceID"), validation = .getValidation()))
   resp = .getUrlErr(url)
-  r = fromJSON(resp, nullValue = NA)
+  r = fromJSON(resp)
   .fieldAsName(r$features)
 }
 
@@ -230,6 +231,6 @@ getMeasurementDataForAssay = function
 ) {
   url = .createUrl(getPhenotypeDatabaseBaseUrl(), "getMeasurementDataForAssay", list(assayToken = assayToken, deviceID = .get("deviceID"), validation = .getValidation()))
   resp = .getUrlErr(url)
-  r = fromJSON(resp, nullValue = NA)
+  r = fromJSON(resp$measurements)
   r
 }
