@@ -234,3 +234,13 @@ getMeasurementDataForAssay = function
   r = fromJSON(resp$measurements)
   r
 }
+
+exportAssayToOpal = function
+### Get data for a given assay
+(assayToken ##<< The token of the assay to get the data for
+) {
+  url = .createUrl(getPhenotypeDatabaseBaseUrl(), "exportAssayToOpal", list(assayToken = assayToken, deviceID = .get("deviceID"), validation = .getValidation()))
+  resp = .getUrlErr(url)
+  r = fromJSON(resp)
+  r
+}
