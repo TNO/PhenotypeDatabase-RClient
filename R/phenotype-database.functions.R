@@ -231,8 +231,8 @@ getMeasurementDataForAssay = function
 ) {
   url = .createUrl(getPhenotypeDatabaseBaseUrl(), "getMeasurementDataForAssay", list(assayToken = assayToken, deviceID = .get("deviceID"), validation = .getValidation()))
   resp = .getUrlErr(url)
-  r = fromJSON(resp$measurements)
-  r
+  r = fromJSON(resp)
+  .fieldAsName(r$measurements)
 }
 
 exportAssayToOpal = function
