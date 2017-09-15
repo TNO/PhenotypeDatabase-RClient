@@ -3,15 +3,21 @@
 ###############################################
 library(devtools)
 install_github("TNO/PhenotypeDatabase-RClient")
+library(PhenotypeDatabaseRClient)
 
 ## Specify the Phenotype Database instance
 setPhenotypeDatabaseBaseUrl("https://dashin.eu/interventionstudies/api/")
 
 ## Login to the Phenotype Database instance
-## You can find your API key (skey) in your Phenotype Database profile
 user = "yourUsername"
+
+## Set your password here or type it in console by uncommenting the second line below
 pass = "yourPass"
+#pass = readline("Enter your password in console: ")
+
+## Set your API key (found in your Phenotype Database user profile)
 skey = "yourSharedKey"
+
 authenticate(user, pass, skey)
 
 ## Get available studies
@@ -59,3 +65,5 @@ p = ggplot(assayDataFrame, aes(x=subject, y=value, fill=timepoint)) +
   geom_bar(stat="identity", position=position_dodge())
 p
 
+## This requires an Opal (obiba.org/pages/products/opal) instance on the same server as your PhenotypeDatabase instance and some additional Phenotype Database configuration
+exportAssayToOpal(assayToken)
