@@ -2,7 +2,7 @@ Package: PhenotypeDatabaseRClient
 Type: Package
 Title: R Client for Phenotype Database (http://phenotypefoundation.org/)
 Version: 2.0.1
-Date: 2016-08-02
+Date: 2018-11-07
 Author: Thomas Kelder, Ferry Jagers, Tim van den Broek
 Maintainer: Ferry Jagers <ferry.jagers@tno.nl>
 Description: Client for the Phenotype Database (phenotypefoundation.org). Allows querying study description and underlying datasets.
